@@ -1,6 +1,6 @@
 const Crawler = require("crawler");
 const c = new Crawler({
-  maxConnections: 5,
+  maxConnections: 1,
   // This will be called for each crawled page
   callback: function (error, res, done) {
     if (error) {
@@ -18,37 +18,24 @@ const c = new Crawler({
 let lock = false
 class CrawlerService {
 
-  static async get_data_detail_page(nowtopic, result) {
-    // if(nowtopic <= thispagetotaltopic){
-    //   console.log(`nowtopic=${nowtopic} `)
+  static async get_data_detail_page(obj) {
 
-    //   CrawlerService.get_data_detail_page({nowpage: nowpage, totalpage: totalpage, result: result, nowtopic: nowtopic +1, thispagetotaltopic: thispagetotaltopic})
-    // }else{
-    //   CrawlerService.get_data_page(nowpage, totalpage, result)
-    // }
-    if (nowtopic < result.length) {
       c.queue({
-        uri: `http://www.erji.net/${result[nowtopic].post_link}`,
+        uri: `http://www.erji.net/${obj.post_link}`,
         callback: function (error, res, done) {
           if (error) {
             console.log(error);
           } else {
-            console.log(nowtopic)
             var $ = res.$;
             let common = $('div').add('t_fsz').find('td .t_f')
 
-            result[nowtopic].post_description = $(common[0]).text()
-
-            CrawlerService.get_data_detail_page(nowtopic + 1, result)
+            obj.post_description = $(common[0]).text()
+            console.log(obj)
           }
           done();
         }
       })
-    } else {
-      console.log(result)
-      console.log(`result_length=${result.length} end`)
-      lock = false
-    }
+
 
   }
 
@@ -67,22 +54,22 @@ class CrawlerService {
           for (let i = 0; i < common.length; i++) {
             // console.log(common[i])
             let obj = {}
+            obj.content_id = $(common[i]).find(' .showcontent').attr('id')
             obj.post_title = $(common[i]).find(' .xst').text()
             obj.post_link = $(common[i]).find(' .xst').attr('href')
             obj.time = $($(common[i]).find(' .by')[0]).find('span').text()
-            // console.log(obj)
             if (obj.post_title && obj.post_link) {
-              result.push(obj);
+              CrawlerService.get_data_detail_page(obj)
             }
           }
 
-          console.log(`nowpage=${nowpage} result_length=${result.length} `)
-          if (nowpage < totalpage) {
+          // console.log(`nowpage=${nowpage} result_length=${result.length} `)
+          // if (nowpage < totalpage) {
 
-            CrawlerService.get_data_page(nowpage + 1, totalpage, result)
-          } else {
-            CrawlerService.get_data_detail_page(0, result)
-          }
+          //   CrawlerService.get_data_page(nowpage + 1, totalpage, result)
+          // } else {
+          //   CrawlerService.get_data_detail_page(0, result)
+          // }
         }
         done();
       }
@@ -104,8 +91,10 @@ class CrawlerService {
           } else {
             var $ = res.$;
             let totalpage = $('#autopbn').attr('totalpage')
-
-            CrawlerService.get_data_page(1, 2, [])
+            for(let i=1; i<=1;i++){
+              console.log(i)
+              CrawlerService.get_data_page(i, totalpage, [])
+            }
             console.log('Grabbed', res.body.length, 'bytes');
           }
           done();

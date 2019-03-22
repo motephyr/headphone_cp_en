@@ -18,3 +18,4 @@ const Route = use('Route')
 
 Route.on('/').render('welcome')
 Route.get('/crawler/get_data', 'CrawlerController.get_data')
+Route.resource('raw_content', 'RawContentController')

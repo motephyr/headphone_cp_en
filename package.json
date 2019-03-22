@@ -29,7 +29,8 @@
     "@adonisjs/session": "^1.0.27",
     "@adonisjs/shield": "^1.0.8",
     "crawler": "^1.2.0",
-    "cross-env": "^5.2.0"
+    "cross-env": "^5.2.0",
+    "sqlite3": "^4.0.6"
   },
   "devDependencies": {
     "nodemon": "^1.18.10"

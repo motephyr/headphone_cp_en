@@ -85,7 +85,7 @@ class CrawlerService {
     })
   }
 
-  static async get_data(aaa) {
+  static async get_data() {
     await RawContent.query().delete() // all delete test
 
     // if (!lock) {
@@ -113,7 +113,7 @@ class CrawlerService {
 
     // }
 
-    return aaa
+    return 'finish'
   }
 }
 

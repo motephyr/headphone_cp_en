@@ -1,5 +1,39 @@
 
 class HeadphoneAnalyzeService {
+  static appear_more(list) {
+    let result = Object.keys(list).filter(function(x){
+      return list[x] > 10
+    })
+    let result2 = []
+    for(let i=0;i<result.length;i++){
+      result2.push({name: result[i], freq: list[result[i]]})
+    }
+    return result2
+  }
+  static get_frequency(string) {
+    var freq = {};
+    for (var i=0; i<string.length;i++) {
+        var character = string[i].toLowerCase();
+        if (freq[character]) {
+           freq[character]++;
+        } else {
+           freq[character] = 1;
+        }
+    }
+
+    return freq;
+  }
+  static get_result(raw_contents){
+    let array = []
+    for(let i = 0; i< raw_contents.length; i++){
+      let obj = HeadphoneAnalyzeService.get_name_price(raw_contents[i])
+      if(obj.name && obj.price){
+        array.push(obj)
+      }
+    }
+    return array
+  }
+
   static get_name_price(obj) {
     String.prototype.replaceAll = function(search, replacement) {
       var target = this;
@@ -15,10 +49,10 @@ class HeadphoneAnalyzeService {
 
     let situation = obj.post_title.match(/(出|售)/g)
     if(situation){
-      obj.situation = '賣'
+      obj.situation = 'sell'
     }else{
       situation = obj.post_title.match(/(收)/g)
-      obj.situation = '買'
+      obj.situation = 'buy'
     }
     
     // get price

@@ -1,0 +1,38 @@
+
+@layout('master')
+
+@section('content')
+  <div class="box">
+    <h1 class="title">Task List</h1>
+
+      <table class="table is-bordered is-striped is-narrow is-fullwidth">
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>Title</th>
+            <th>times</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          @each(node in result)
+            <tr>
+              <td>
+                {{ ($loop.index + 1) }}
+              </td>
+              <td>
+                {{ node.name }}
+              </td>
+              <td>
+                {{ node.freq }}
+              </td>
+            </tr>
+          @else
+            <tr>
+              <td colspan="3" class="has-text-centered">No task created yet!</td>
+            </tr>
+          @endeach
+        </tbody>
+      </table>
+  </div>
+@endsection

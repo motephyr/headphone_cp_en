@@ -2,7 +2,7 @@ const Crawler = require("crawler");
 const RawContent = use('App/Models/RawContent')
 
 const c = new Crawler({
-  maxConnections: 1,
+  maxConnections: 10,
   // This will be called for each crawled page
   callback: function (error, res, done) {
     if (error) {
@@ -86,7 +86,7 @@ class CrawlerService {
   }
 
   static async get_data() {
-    await RawContent.query().delete() // all delete test
+    // await RawContent.query().delete() // all delete test
 
     // if (!lock) {
       lock = true
@@ -101,7 +101,7 @@ class CrawlerService {
           } else {
             var $ = res.$;
             let totalpage = $('#autopbn').attr('totalpage')
-            for(let i=1; i<=1;i++){
+            for(let i=1; i<=totalpage;i++){
               console.log(i)
               CrawlerService.get_data_page(i, totalpage, [])
             }

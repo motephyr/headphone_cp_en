@@ -1,8 +1,8 @@
 const { hooks } = require('@adonisjs/ignitor')
 
 hooks.after.providersBooted(() => {
-  const Database = use('Database')
-  Database.on('query', function(q){console.log(q.sql)})
+  // const Database = use('Database')
+  // Database.on('query', function(q){console.log(q.sql)})
   
   const View = use('View')
   View.global('h1', function (s) {

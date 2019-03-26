@@ -1,5 +1,9 @@
 const Crawler = require("crawler");
 const RawContent = use('App/Models/RawContent')
+const TargetContent = use('App/Models/TargetContent')
+
+const MailService = require("./MailService")
+const HeadphoneAnalyzeService = require("./HeadphoneAnalyzeService")
 
 const c = new Crawler({
   maxConnections: 10,
@@ -19,28 +23,49 @@ const c = new Crawler({
 
 let lock = false
 class CrawlerService {
-
+  /**
+   * From headphone_detail_page, get post_description
+   * @param obj include post_id, post_title, post_link, time
+   * @param need_mail if true, we will check new data if exists in TargetContent 
+   */
   static async get_data_detail_page(obj, need_mail) {
 
-      c.queue({
-        uri: `http://www.erji.net/${obj.post_link}`,
-        callback: async function (error, res, done) {
-          if (error) {
-            console.log(error);
-          } else {
-            var $ = res.$;
-            let common = $('div').add('t_fsz').find('td .t_f')
+    c.queue({
+      uri: `http://www.erji.net/${obj.post_link}`,
+      callback: async function (error, res, done) {
+        if (error) {
+          console.log(error);
+        } else {
+          var $ = res.$;
+          let common = $('div').add('t_fsz').find('td .t_f')
 
-            obj.post_description = $(common[0]).text()
+          obj.post_description = $(common[0]).text()
 
-            const result = await RawContent.findOrCreate({post_id: obj.post_id}, obj)
-            if(need_mail){
+          const result = await RawContent.findBy('post_id', obj.post_id)
+          if (!result) {
+            const raw_content = new RawContent()
+            raw_content.post_id = obj.post_id
+            raw_content.post_title = obj.post_title
+            raw_content.post_description = obj.post_description
+            raw_content.post_link = obj.post_link
+            raw_content.time = obj.time
+            await raw_content.save()
+
+            if (need_mail) {
               console.log('send_mail')
+              obj = HeadphoneAnalyzeService.get_name_price(obj)
+              if (obj.name) {
+                let target = await TargetContent.findBy('name', obj.name)
+                if (target){
+                  MailService.send({ subject: obj.title, text: JSON.stringify(obj) })
+                }
+              }
             }
           }
-          done();
         }
-      })
+        done();
+      }
+    })
 
 
   }
@@ -86,27 +111,27 @@ class CrawlerService {
     // await RawContent.query().delete() // all delete test
 
     // if (!lock) {
-      lock = true
-      // Queue URLs with custom callbacks & parameters
-      c.queue([{
-        uri: 'http://www.erji.net/forum.php?mod=forumdisplay&fid=8&filter=author&orderby=dateline&typeid=10',
+    lock = true
+    // Queue URLs with custom callbacks & parameters
+    c.queue([{
+      uri: 'http://www.erji.net/forum.php?mod=forumdisplay&fid=8&filter=author&orderby=dateline&typeid=10',
 
-        // The global callback won't be called
-        callback: function (error, res, done) {
-          if (error) {
-            console.log(error);
-          } else {
-            var $ = res.$;
-            let totalpage = $('#autopbn').attr('totalpage')
-            for(let i=1; i<=totalpage;i++){
-              console.log(i)
-              CrawlerService.get_data_page(i, totalpage, [], false)
-            }
-            console.log('Grabbed', res.body.length, 'bytes');
+      // The global callback won't be called
+      callback: function (error, res, done) {
+        if (error) {
+          console.log(error);
+        } else {
+          var $ = res.$;
+          let totalpage = $('#autopbn').attr('totalpage')
+          for (let i = 1; i <= totalpage; i++) {
+            console.log(i)
+            CrawlerService.get_data_page(i, totalpage, [], false)
           }
-          done();
+          console.log('Grabbed', res.body.length, 'bytes');
         }
-      }]);
+        done();
+      }
+    }]);
 
     // }
 

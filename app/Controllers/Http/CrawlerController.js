@@ -38,8 +38,30 @@ class CrawlerController {
     let get_frequency = HeadphoneAnalyzeService.get_frequency(names)
     let appear_more = HeadphoneAnalyzeService.appear_more(get_frequency)
 
-  
-    return view.render('crawler.classify_and_appear_more', { result: appear_more })
+    let merge_array = appear_more.map(function(x) {
+      x.data = result.filter(function(element) {
+        return element.name == x.name;
+      });
+      return x
+    })
+
+    let result2 = merge_array.map(function(x){
+      let filterOutliers = StatHelpers.filterOutliers(x.data)
+      let rollup = dl.groupby('name', 'situation')
+      .summarize({'price': ['mean', 'stdev', 'count']})
+      .execute(filterOutliers);
+
+      x.rollup = dl.format.table(rollup).trim()
+      let sell = rollup.find((x) => x.situation == 'sell')
+      let buy = rollup.find((x) => x.situation == 'buy')
+
+      x.buy_it = (buy && sell && buy.mean_price > sell.mean_price) ? 'true' : ""
+
+      return x
+    })
+
+    
+    return view.render('crawler.classify_and_appear_more', { result: result2 })
   }
   async product_trend ({ request, response, view }) {
     const query = request.get()
@@ -57,19 +79,18 @@ class CrawlerController {
 
     result2 = result2.map(function(x){
       x.time = x.time - minustime
-      x.price = parseInt(x.price)
       return x
     });
 
-    result2 = StatHelpers.filterOutliers(result2)
+    let filterOutliers = StatHelpers.filterOutliers(result2)
 
 
     var rollup = dl.groupby('situation')
-    .summarize({'price': ['mean', 'stdev']})
-    .execute(result2);
+    .summarize({'price': ['mean', 'stdev', 'count']})
+    .execute(filterOutliers);
 
 
-    return view.render('crawler.product_trend', { result: JSON.stringify(result2), stat: dl.format.table(rollup) })
+    return view.render('crawler.product_trend', { html_result: filterOutliers, result: JSON.stringify(filterOutliers), stat: dl.format.table(rollup) })
   }
 }
 

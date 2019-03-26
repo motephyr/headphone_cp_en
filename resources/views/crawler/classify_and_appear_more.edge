@@ -11,7 +11,8 @@
             <th>SN</th>
             <th>Title</th>
             <th>times</th>
-
+            <th>rollup</th>
+            <th>buy_it</th>
           </tr>
         </thead>
         <tbody>
@@ -25,6 +26,12 @@
               </td>
               <td>
                 {{ node.freq }}
+              </td>
+              <td>
+                <pre>{{ node.rollup }}</pre>
+              </td>
+              <td>
+                  {{ node.buy_it }}
               </td>
             </tr>
           @else

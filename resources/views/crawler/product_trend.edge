@@ -9,10 +9,44 @@
 
 @section('content')
 <div class="box">
-  <pre>
-  {{stat}}
-  </pre>
+  <pre>{{stat}}</pre>
   <canvas id="canvas" width="800" height="400"></canvas>
+  <table class="table is-bordered is-striped is-narrow is-fullwidth">
+      <thead>
+        <tr>
+          <th>SN</th>
+          <th>situation</th>
+          <th>title</th>
+          <th>price</th>
+          <th>time</th>
+        </tr>
+      </thead>
+      <tbody>
+        @each(raw_content in html_result)
+          <tr>
+            <td>
+              {{ ($loop.index + 1) }}
+            </td>
+            <td>
+              {{ raw_content.situation }}
+            </td>
+            <td>
+              <a href="http://www.erji.net/{{ raw_content.link }}">{{ raw_content.title }}</a>
+            </td>
+            <td>
+              {{ raw_content.price }}
+            </td>
+            <td>
+              {{ raw_content.time }}
+            </td>
+          </tr>
+        @else
+          <tr>
+            <td colspan="3" class="has-text-centered">No task created yet!</td>
+          </tr>
+        @endeach
+      </tbody>
+    </table>
 </div>
 @endsection
 

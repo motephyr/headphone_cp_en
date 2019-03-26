@@ -6,16 +6,19 @@
     <title>Task List</title>
     {{ style('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css') }}
     {{ style('https://cdnjs.cloudflare.com/ajax/libs/bulma/0.5.1/css/bulma.min.css') }}
+    @!section('head')
+
 </head>
 <body>
     <section class="section">
         <div class="container">
             <div class="columns">
-                <div class="column is-8 is-offset-2">
+                <div class="column is-12">
                     @!section('content')
                 </div>
             </div>
         </div>
   </section>
 </body>
+@!section('js')
 </html>

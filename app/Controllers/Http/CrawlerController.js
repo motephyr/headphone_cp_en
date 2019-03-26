@@ -1,8 +1,10 @@
 'use strict'
 const CrawlerService = require("../../Services/CrawlerService")
 const HeadphoneAnalyzeService = require("../../Services/HeadphoneAnalyzeService")
-const RawContent = use('App/Models/RawContent')
+const StatHelpers = require("../../Helpers/StatHelpers")
 
+const RawContent = use('App/Models/RawContent')
+const dl = require('datalib')
 class CrawlerController {
   async get_data ({ request, response }) {
 
@@ -31,12 +33,43 @@ class CrawlerController {
     raw_contents = raw_contents.toJSON()
 
     let result = HeadphoneAnalyzeService.get_result(raw_contents)
+
     let names = result.map((x) => x.name)
     let get_frequency = HeadphoneAnalyzeService.get_frequency(names)
     let appear_more = HeadphoneAnalyzeService.appear_more(get_frequency)
 
   
     return view.render('crawler.classify_and_appear_more', { result: appear_more })
+  }
+  async product_trend ({ request, response, view }) {
+    const query = request.get()
+
+    let raw_contents = await RawContent.query().fetch()
+    raw_contents = raw_contents.toJSON()
+    
+    let result = HeadphoneAnalyzeService.get_result(raw_contents)
+    let result2 = result.filter((x) => x.name === query.name).sort(function(a,b){
+
+      return a.time - b.time;
+    })
+    
+    var minustime = result2[0].time
+
+    result2 = result2.map(function(x){
+      x.time = x.time - minustime
+      x.price = parseInt(x.price)
+      return x
+    });
+
+    result2 = StatHelpers.filterOutliers(result2)
+
+
+    var rollup = dl.groupby('situation')
+    .summarize({'price': ['mean', 'stdev']})
+    .execute(result2);
+
+
+    return view.render('crawler.product_trend', { result: JSON.stringify(result2), stat: dl.format.table(rollup) })
   }
 }
 

@@ -13,7 +13,7 @@ class HeadphoneAnalyzeService {
   static get_frequency(string) {
     var freq = {};
     for (var i=0; i<string.length;i++) {
-        var character = string[i].toLowerCase();
+        var character = string[i];
         if (freq[character]) {
            freq[character]++;
         } else {
@@ -72,7 +72,7 @@ class HeadphoneAnalyzeService {
 
 
     
-    return {situation: obj.situation, title: obj.post_title, name: obj.name && obj.name[0], price: obj.price && obj.price[0], time: obj.time}
+    return {situation: obj.situation, title: obj.post_title, name: obj.name && obj.name[0].toLowerCase(), price: obj.price && obj.price[0], time: new Date(obj.time).getTime()/(60*60*24*1000), ori_time: obj.time}
   }
 
 

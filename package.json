@@ -30,6 +30,7 @@
     "@adonisjs/shield": "^1.0.8",
     "crawler": "^1.2.0",
     "cross-env": "^5.2.0",
+    "datalib": "^1.9.2",
     "sqlite3": "^4.0.6"
   },
   "devDependencies": {

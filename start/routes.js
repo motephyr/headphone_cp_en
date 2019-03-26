@@ -20,4 +20,6 @@ Route.on('/').render('welcome')
 Route.get('/crawler/get_data', 'CrawlerController.get_data')
 Route.get('/crawler/analyze_data', 'CrawlerController.analyze_data')
 Route.get('/crawler/classify_and_appear_more', 'CrawlerController.classify_and_appear_more')
+Route.get('/crawler/product_trend', 'CrawlerController.product_trend')
+
 Route.resource('raw_content', 'RawContentController')

@@ -27,7 +27,7 @@ class CrawlerController {
     return view.render('crawler.analyze_data', { raw_contents: result })
     
   }
-  async classify_and_appear_more ({ request, response, view }) {
+  async classify_and_choose_target_and_save ({ request, response, view }) {
     let raw_contents = await RawContent.query().fetch()
     raw_contents = raw_contents.toJSON()
 
@@ -45,13 +45,13 @@ class CrawlerController {
     })
 
     // get multi brand Statistics 
-    let result2 = merge_array.map(function(x){
+    result = merge_array.map(function(x){
       let filterOutliers = StatHelpers.filterOutliers(x.data)
       return HeadphoneAnalyzeService.get_statistic_data(filterOutliers, x)
     })
 
     
-    return view.render('crawler.classify_and_appear_more', { result: result2 })
+    return view.render('crawler.classify_and_choose_target_and_save', { result: result })
   }
   async product_trend ({ request, response, view }) {
     const query = request.get()
@@ -76,7 +76,7 @@ class CrawlerController {
     let filterOutliers = StatHelpers.filterOutliers(result2)
     filterOutliers = HeadphoneAnalyzeService.get_statistic_data(filterOutliers, filterOutliers)
 
-    return view.render('crawler.product_trend', { html_result: filterOutliers, result: JSON.stringify(filterOutliers), stat: filterOutliers.rollup })
+    return view.render('crawler.product_trend', { html_result: filterOutliers, result: JSON.stringify(filterOutliers)})
   }
 }
 

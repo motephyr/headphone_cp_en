@@ -3,11 +3,11 @@ const dl = require('datalib')
 
 class HeadphoneAnalyzeService {
   static get_statistic_data(origin_data, x){
-    let rollup = dl.groupby('name', 'situation')
+    x.stat = dl.groupby('name', 'situation')
     .summarize({'price': ['mean', 'stdev', 'count']})
     .execute(origin_data);
 
-    x.rollup = dl.format.table(rollup).trim()
+    x.rollup = dl.format.table(x.stat).trim()
 
     x.linearRegression = dl.linearRegression(origin_data, function(x) { return x.price; }, function(x) { return x.time; })
     x.buy_it = (x.linearRegression.slope > 0) ? 'true' : ""
@@ -15,6 +15,7 @@ class HeadphoneAnalyzeService {
   }
 
   static appear_more(list) {
+    // choose headphone which more data.
     let result = Object.keys(list).filter(function (x) {
       return list[x] > 15
     })

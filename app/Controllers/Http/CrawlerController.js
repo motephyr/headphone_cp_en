@@ -4,7 +4,6 @@ const HeadphoneAnalyzeService = require("../../Services/HeadphoneAnalyzeService"
 const StatHelpers = require("../../Helpers/StatHelpers")
 
 const RawContent = use('App/Models/RawContent')
-const dl = require('datalib')
 class CrawlerController {
   async get_data ({ request, response }) {
 
@@ -45,19 +44,10 @@ class CrawlerController {
       return x
     })
 
+    // get multi brand Statistics 
     let result2 = merge_array.map(function(x){
       let filterOutliers = StatHelpers.filterOutliers(x.data)
-      let rollup = dl.groupby('name', 'situation')
-      .summarize({'price': ['mean', 'stdev', 'count']})
-      .execute(filterOutliers);
-
-      x.rollup = dl.format.table(rollup).trim()
-      let sell = rollup.find((x) => x.situation == 'sell')
-      let buy = rollup.find((x) => x.situation == 'buy')
-
-      x.buy_it = (buy && sell && buy.mean_price > sell.mean_price) ? 'true' : ""
-
-      return x
+      return HeadphoneAnalyzeService.get_statistic_data(filterOutliers, x)
     })
 
     
@@ -82,15 +72,11 @@ class CrawlerController {
       return x
     });
 
+    // get single brand Statistics 
     let filterOutliers = StatHelpers.filterOutliers(result2)
+    filterOutliers = HeadphoneAnalyzeService.get_statistic_data(filterOutliers, filterOutliers)
 
-
-    var rollup = dl.groupby('situation')
-    .summarize({'price': ['mean', 'stdev', 'count']})
-    .execute(filterOutliers);
-
-
-    return view.render('crawler.product_trend', { html_result: filterOutliers, result: JSON.stringify(filterOutliers), stat: dl.format.table(rollup) })
+    return view.render('crawler.product_trend', { html_result: filterOutliers, result: JSON.stringify(filterOutliers), stat: filterOutliers.rollup })
   }
 }
 

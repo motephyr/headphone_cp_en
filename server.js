@@ -19,7 +19,29 @@
 
 const { Ignitor } = require('@adonisjs/ignitor')
 
+
 new Ignitor(require('@adonisjs/fold'))
   .appRoot(__dirname)
   .fireHttpServer()
+  .then(async () => {
+    //start
+    const Database = use('Database')
+    const CrawlerService = require("./app/Services/CrawlerService")
+
+    const count = await Database
+    .from('raw_contents')
+    .count()    
+    const total = count[0]['count(*)']
+    if(total === 0){
+      // to get all data
+      await CrawlerService.get_data()
+    }
+    var schedule = require('node-schedule');
+
+    var j = schedule.scheduleJob('*/5 * * * *', async function () {
+      console.log('every 5 minute to get erji first page data');
+      await CrawlerService.get_data_page(1, 1, [])
+    });
+  })
   .catch(console.error)
+

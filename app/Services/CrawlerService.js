@@ -32,14 +32,8 @@ class CrawlerService {
             let common = $('div').add('t_fsz').find('td .t_f')
 
             obj.post_description = $(common[0]).text()
-            console.log(obj)
-            const raw_content = new RawContent()
-            raw_content.post_id = obj.post_id
-            raw_content.post_title = obj.post_title
-            raw_content.post_description = obj.post_description
-            raw_content.post_link = obj.post_link
-            raw_content.time = obj.time
-            await raw_content.save()
+
+            const result = await RawContent.findOrCreate({post_id: obj.post_id}, obj)
           }
           done();
         }

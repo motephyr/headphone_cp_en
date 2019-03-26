@@ -1,9 +1,12 @@
 'use strict'
 const CrawlerService = require("../../Services/CrawlerService")
 const HeadphoneAnalyzeService = require("../../Services/HeadphoneAnalyzeService")
+const StatService = require("../../Services/StatService")
+
 const StatHelpers = require("../../Helpers/StatHelpers")
 
 const RawContent = use('App/Models/RawContent')
+
 class CrawlerController {
   async get_data ({ request, response }) {
 
@@ -28,28 +31,8 @@ class CrawlerController {
     
   }
   async classify_and_choose_target_and_save ({ request, response, view }) {
-    let raw_contents = await RawContent.query().fetch()
-    raw_contents = raw_contents.toJSON()
-
-    let result = HeadphoneAnalyzeService.get_result(raw_contents)
-
-    let names = result.map((x) => x.name)
-    let get_frequency = HeadphoneAnalyzeService.get_frequency(names)
-    let appear_more = HeadphoneAnalyzeService.appear_more(get_frequency)
-
-    let merge_array = appear_more.map(function(x) {
-      x.data = result.filter(function(element) {
-        return element.name == x.name;
-      });
-      return x
-    })
-
-    // get multi brand Statistics 
-    result = merge_array.map(function(x){
-      let filterOutliers = StatHelpers.filterOutliers(x.data)
-      return HeadphoneAnalyzeService.get_statistic_data(filterOutliers, x)
-    })
-
+    let result = await StatService.calculate()
+    
     
     return view.render('crawler.classify_and_choose_target_and_save', { result: result })
   }
@@ -74,7 +57,7 @@ class CrawlerController {
 
     // get single brand Statistics 
     let filterOutliers = StatHelpers.filterOutliers(result2)
-    filterOutliers = HeadphoneAnalyzeService.get_statistic_data(filterOutliers, filterOutliers)
+    filterOutliers = StatService.get_statistic_data(filterOutliers, filterOutliers)
 
     return view.render('crawler.product_trend', { html_result: filterOutliers, result: JSON.stringify(filterOutliers)})
   }

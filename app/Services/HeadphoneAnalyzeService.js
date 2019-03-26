@@ -1,43 +1,6 @@
 
-const dl = require('datalib')
 
 class HeadphoneAnalyzeService {
-  static get_statistic_data(origin_data, x){
-    x.stat = dl.groupby('name', 'situation')
-    .summarize({'price': ['mean', 'stdev', 'count']})
-    .execute(origin_data);
-
-    x.rollup = dl.format.table(x.stat).trim()
-
-    x.linearRegression = dl.linearRegression(origin_data, function(x) { return x.price; }, function(x) { return x.time; })
-    x.buy_it = (x.linearRegression.slope > 0) ? 'true' : ""
-    return x
-  }
-
-  static appear_more(list) {
-    // choose headphone which more data.
-    let result = Object.keys(list).filter(function (x) {
-      return list[x] > 15
-    })
-    let result2 = []
-    for (let i = 0; i < result.length; i++) {
-      result2.push({ name: result[i], freq: list[result[i]] })
-    }
-    return result2
-  }
-  static get_frequency(string) {
-    var freq = {};
-    for (var i = 0; i < string.length; i++) {
-      var character = string[i];
-      if (freq[character]) {
-        freq[character]++;
-      } else {
-        freq[character] = 1;
-      }
-    }
-
-    return freq;
-  }
   static get_result(raw_contents) {
     let array = []
     for (let i = 0; i < raw_contents.length; i++) {

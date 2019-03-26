@@ -20,7 +20,7 @@ const c = new Crawler({
 let lock = false
 class CrawlerService {
 
-  static async get_data_detail_page(obj) {
+  static async get_data_detail_page(obj, need_mail) {
 
       c.queue({
         uri: `http://www.erji.net/${obj.post_link}`,
@@ -34,6 +34,9 @@ class CrawlerService {
             obj.post_description = $(common[0]).text()
 
             const result = await RawContent.findOrCreate({post_id: obj.post_id}, obj)
+            if(need_mail){
+              console.log('send_mail')
+            }
           }
           done();
         }
@@ -45,7 +48,7 @@ class CrawlerService {
 
 
 
-  static async get_data_page(nowpage, totalpage, result) {
+  static async get_data_page(nowpage, totalpage, result, need_mail) {
     c.queue({
       uri: `http://www.erji.net/forum.php?mod=forumdisplay&fid=8&filter=author&orderby=dateline&typeid=10&page=${nowpage}`,
       callback: function (error, res, done) {
@@ -62,7 +65,7 @@ class CrawlerService {
             obj.post_link = $(common[i]).find(' .xst').attr('href')
             obj.time = $($(common[i]).find(' .by')[0]).find('span').text()
             if (obj.post_title && obj.post_link) {
-              CrawlerService.get_data_detail_page(obj)
+              CrawlerService.get_data_detail_page(obj, need_mail)
             }
           }
 
@@ -97,7 +100,7 @@ class CrawlerService {
             let totalpage = $('#autopbn').attr('totalpage')
             for(let i=1; i<=totalpage;i++){
               console.log(i)
-              CrawlerService.get_data_page(i, totalpage, [])
+              CrawlerService.get_data_page(i, totalpage, [], false)
             }
             console.log('Grabbed', res.body.length, 'bytes');
           }

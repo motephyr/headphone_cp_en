@@ -27,6 +27,7 @@ new Ignitor(require('@adonisjs/fold'))
     //start
     const Database = use('Database')
     const CrawlerService = require("./app/Services/CrawlerService")
+    const StatService = require("./app/Services/StatService")
 
     const count = await Database
     .from('raw_contents')
@@ -38,10 +39,16 @@ new Ignitor(require('@adonisjs/fold'))
     }
     var schedule = require('node-schedule');
 
-    var j = schedule.scheduleJob('*/5 * * * *', async function () {
+    schedule.scheduleJob('*/5 * * * *', async function () {
       console.log('every 5 minute to get erji first page data');
-      await CrawlerService.get_data_page(1, 1, [])
+      await CrawlerService.get_data_page(1, 1, [], true)
     });
+
+    schedule.scheduleJob('3 * * * *', async function () {
+      console.log('every 1 hour to update target content');
+      await StatService.calculate()
+    });
+
   })
   .catch(console.error)
 

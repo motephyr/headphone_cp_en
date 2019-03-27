@@ -16,7 +16,7 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.on('/').render('welcome')
+Route.get('/', 'HomeController.index')
 Route.get('/home', 'HomeController.index')
 Route.post('/crawler/get_data', 'CrawlerController.get_data')
 Route.get('/crawler/analyze_data', 'CrawlerController.analyze_data')

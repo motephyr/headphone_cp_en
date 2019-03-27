@@ -49,20 +49,17 @@
     <table class="table is-bordered is-striped is-narrow is-fullwidth">
       <thead>
         <tr>
-          <th>id</th>
           <th>post_id</th>
           <th>situation</th>
           <th>name</th>
           <th>price</th>
           <th>time</th>
+          <th>buy</th>
         </tr>
       </thead>
       <tbody>
         @each(raw_content in raw_contents)
         <tr>
-            <td>
-                {{ raw_content.ori_id }}
-            </td>
           <td>
             {{ raw_content.id }}
           </td>
@@ -81,7 +78,10 @@
           <td>
             {{ raw_content.ori_time }}
           </td>
-
+          <td>
+              {{ raw_content.buy_it }}
+            </td>
+  
         </tr>
         @else
         <tr>
@@ -122,7 +122,7 @@
                   {{ csrfField() }}
                   <input type="hidden" name="stock_id" value="{{stock.id}}" />
 
-                  <input type="number" name="price" />
+                  實際賣出價格<input type="number" name="price" />
             
                   <button type="submit" class="button is-primary"> 售出 </button>
                 </form>

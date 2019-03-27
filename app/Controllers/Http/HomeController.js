@@ -18,9 +18,10 @@ class HomeController {
     let raw_contents = await RawContent.query().where(function() {
       this.where('post_at', '>=', date.getTime())
 
-    }).fetch()
+    }).orderBy('post_id','desc').fetch()
     raw_contents = raw_contents.toJSON()
     raw_contents = HeadphoneAnalyzeService.get_result(raw_contents)
+    raw_contents = raw_contents.filter(function(x){return x.state !== 'buy'})
 
     let stocks = await Stock.query().orderBy('id', 'desc').fetch()
 

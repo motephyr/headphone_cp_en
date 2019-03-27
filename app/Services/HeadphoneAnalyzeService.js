@@ -59,7 +59,8 @@ class HeadphoneAnalyzeService {
       name: obj.name && obj.name[0].toLowerCase(), 
       price: obj.price && parseInt(obj.price[0]), 
       time: new Date(obj.time).getTime() / (60 * 60 * 24 * 1000), 
-      ori_time: obj.time }
+      ori_time: obj.time,
+    state: obj.state }
   }
 
 

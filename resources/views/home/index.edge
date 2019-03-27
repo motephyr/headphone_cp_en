@@ -5,38 +5,47 @@
   <div class="column is-1">
     <aside class="menu">
       <p class="menu-label">
-        <a href="/crawler/get_data">手動抓取耳機資料</a>
+        <form method="POST" action="{{ route('CrawlerController.get_data') }}">
+          {{ csrfField() }}
+
+          <button type="submit"> 手動抓取耳機資料 </button>
+        </form>
       </p>
       <p class="menu-label">
-        <a href="/crawler/analyze_data">解析Raw Data</a>
+        <a class="has-text-dark" href="/crawler/analyze_data">解析Raw Data</a>
       </p>
       <p class="menu-label">
-        <a href="/crawler/classify_and_choose_target_and_save">目前適合購買的耳機</a>
+        <a class="has-text-dark" href="/crawler/classify_and_choose_target_and_save">目前適合購買的耳機</a>
       </p>
+      <br />
+      <p class="menu-label">
+          <form method="POST" action="{{ route('StockController.recover_data') }}">
+              {{ csrfField() }}
+    
+              <button type="submit" class="has-text-danger"> 還原購買資料 </button>
+            </form>
+        </p>
     </aside>
   </div>
   <div class="column is-6">
+    <h2>購買耳機</h2>
       <form method="POST" action="{{ route('StockController.buy') }}">
           {{ csrfField() }}
-    
           <div class="field">
             <label>Post Id</label>
     
             <input type="text" name="post_id" />
           </div>
           <div class="field">
-            <label>Current price</label>
+            <label>實際價格</label>
     
             <input type="text" name="price" />
           </div>
-          <div class="field">
-            <input type="radio" name="situation" value="buy"> buy<br>
-            <input type="radio" name="situation" value="sell"> sell<br>
-          </div>
+          <input type="hidden" name="situation" value="buy" />
     
-    
-          <button type="submit"> Submit </button>
+          <button type="submit" class="button is-primary"> 購買 </button>
         </form>
+        <br />
     <table class="table is-bordered is-striped is-narrow is-fullwidth">
       <thead>
         <tr>
@@ -91,6 +100,7 @@
           <th>name</th>
           <th>price</th>
           <th>bought_at</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -106,6 +116,16 @@
           </td>
           <td>
             {{ stock.bought_at }}
+          </td>
+          <td>
+              <form method="POST" action="{{ route('StockController.sell') }}">
+                  {{ csrfField() }}
+                  <input type="hidden" name="stock_id" value="{{stock.id}}" />
+
+                  <input type="hidden" name="situation" value="sell" />
+            
+                  <button type="submit" class="button is-primary"> 售出 </button>
+                </form>
           </td>
         </tr>
         @else

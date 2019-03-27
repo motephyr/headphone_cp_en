@@ -18,9 +18,10 @@ const Route = use('Route')
 
 Route.on('/').render('welcome')
 Route.get('/home', 'HomeController.index')
-Route.get('/crawler/get_data', 'CrawlerController.get_data')
+Route.post('/crawler/get_data', 'CrawlerController.get_data')
 Route.get('/crawler/analyze_data', 'CrawlerController.analyze_data')
 Route.get('/crawler/classify_and_choose_target_and_save', 'CrawlerController.classify_and_choose_target_and_save')
 Route.get('/crawler/product_trend', 'CrawlerController.product_trend')
 
 Route.post('/stock/buy', 'StockController.buy')
+Route.post('/stock/recover_data', 'StockController.recover_data')

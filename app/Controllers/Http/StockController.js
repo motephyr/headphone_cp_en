@@ -18,9 +18,9 @@ class StockController {
     let raw_content = await RawContent.findBy('post_id', body.post_id)
     if (raw_content) {
         raw_content.state = body.situation
-        raw_content.save()
+        await raw_content.save()
 
-        if (body.situation == 'buy') {
+        if (body.situation === 'buy') {
           let obj = HeadphoneAnalyzeService.get_name_price(raw_content)
 
           let stock = new Stock()
@@ -28,7 +28,7 @@ class StockController {
           stock.bought_at = new Date()
           stock.name = obj.name
           stock.price = parseInt(body.price)
-          stock.save()
+          await stock.save()
 
           let price = -stock.price
 
@@ -49,10 +49,19 @@ class StockController {
           record.difference = price
           record.happened_at = new Date()
 
-          record.save()
+          await record.save()
         }
     }
     response.redirect('/home')
+  }
+
+
+  async recover_data({response}){
+    await Record.query().delete()
+    await Stock.query().delete()
+    await RawContent.query().where({state: 'buy'}).update({state: null})
+    response.redirect('/home')
+
   }
 }
 module.exports = StockController

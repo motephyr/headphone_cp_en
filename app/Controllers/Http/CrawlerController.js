@@ -11,6 +11,10 @@ class CrawlerController {
   async get_data ({ request, response }) {
 
     // return await CrawlerService.get_data()
+    await CrawlerService.get_data_page(1, 1, [], true)
+    response.redirect('/home')
+
+
   }
 
   

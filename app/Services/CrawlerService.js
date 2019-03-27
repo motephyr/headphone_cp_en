@@ -42,6 +42,7 @@ class CrawlerService {
           obj.post_description = $(common[0]).text()
 
           const result = await RawContent.findBy('post_id', obj.post_id)
+          
           if (!result) {
             const raw_content = new RawContent()
             raw_content.post_id = obj.post_id
@@ -49,6 +50,7 @@ class CrawlerService {
             raw_content.post_description = obj.post_description
             raw_content.post_link = obj.post_link
             raw_content.time = obj.time
+            raw_content.post_at = new Date(obj.time)
             await raw_content.save()
 
             if (need_mail) {

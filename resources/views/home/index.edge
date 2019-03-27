@@ -1,0 +1,160 @@
+@layout('master')
+
+@section('content')
+<div class="columns">
+  <div class="column is-1">
+    <aside class="menu">
+      <p class="menu-label">
+        <a href="/crawler/get_data">手動抓取耳機資料</a>
+      </p>
+      <p class="menu-label">
+        <a href="/crawler/analyze_data">解析Raw Data</a>
+      </p>
+      <p class="menu-label">
+        <a href="/crawler/classify_and_choose_target_and_save">目前適合購買的耳機</a>
+      </p>
+    </aside>
+  </div>
+  <div class="column is-6">
+      <form method="POST" action="{{ route('StockController.buy') }}">
+          {{ csrfField() }}
+    
+          <div class="field">
+            <label>Post Id</label>
+    
+            <input type="text" name="post_id" />
+          </div>
+          <div class="field">
+            <label>Current price</label>
+    
+            <input type="text" name="price" />
+          </div>
+          <div class="field">
+            <input type="radio" name="situation" value="buy"> buy<br>
+            <input type="radio" name="situation" value="sell"> sell<br>
+          </div>
+    
+    
+          <button type="submit"> Submit </button>
+        </form>
+    <table class="table is-bordered is-striped is-narrow is-fullwidth">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>post_id</th>
+          <th>situation</th>
+          <th>name</th>
+          <th>price</th>
+          <th>time</th>
+        </tr>
+      </thead>
+      <tbody>
+        @each(raw_content in raw_contents)
+        <tr>
+            <td>
+                {{ raw_content.ori_id }}
+            </td>
+          <td>
+            {{ raw_content.id }}
+          </td>
+          <td>
+            {{ raw_content.situation }}
+          </td>
+          <td>
+            分析：<a href="/crawler/product_trend?name={{ raw_content.name }}">{{ raw_content.name }}</a>
+            <br />
+            論壇連結：<a href="http://www.erji.net/{{ raw_content.link }}">{{ raw_content.title }}</a>
+
+          </td>
+          <td>
+            {{ raw_content.price }}
+          </td>
+          <td>
+            {{ raw_content.ori_time }}
+          </td>
+
+        </tr>
+        @else
+        <tr>
+          <td colspan="3" class="has-text-centered">三天之內沒有可解析的資料</td>
+        </tr>
+        @endeach
+      </tbody>
+    </table>
+  </div>
+  <div class="column is-5">
+    <h2>存貨資料</h2>
+    <table class="table is-bordered is-striped is-narrow is-fullwidth">
+      <thead>
+        <tr>
+          <th>raw_content_id</th>
+          <th>name</th>
+          <th>price</th>
+          <th>bought_at</th>
+        </tr>
+      </thead>
+      <tbody>
+        @each(stock in stocks)
+        <tr>
+          <td>
+            {{ stock.raw_content_id }}
+          </td>
+          <td>
+              <a href="/crawler/product_trend?name={{ stock.name }}">{{ stock.name }}</a>
+          <td>
+            {{ stock.price }}
+          </td>
+          <td>
+            {{ stock.bought_at }}
+          </td>
+        </tr>
+        @else
+        <tr>
+          <td colspan="3" class="has-text-centered">未有存貨</td>
+        </tr>
+        @endeach
+      </tbody>
+    </table>
+
+    <h2>歷史紀錄</h2>
+    <table class="table is-bordered is-striped is-narrow is-fullwidth">
+      <thead>
+        <tr>
+          <th>RawContentId</th>
+          <th>situation</th>
+          <th>name</th>
+          <th>difference</th>
+          <th>now_value</th>
+          <th>happened_at</th>
+        </tr>
+      </thead>
+      <tbody>
+        @each(record in records)
+        <tr>
+          <td>
+            {{ record.raw_content_id }}
+          <td>
+            {{ record.situation }}
+          </td>
+          <td>
+            <a href="/crawler/product_trend?name={{ record.name }}">{{ record.name }}</a>
+          </td>
+          <td>
+            {{ record.difference }}
+          </td>
+          <td>
+            {{ record.now_value }}
+          <td>
+            {{ record.happened_at }}
+          </td>
+        </tr>
+        @else
+        <tr>
+          <td colspan="3" class="has-text-centered">未有歷史紀錄</td>
+        </tr>
+        @endeach
+      </tbody>
+    </table>
+  </div>
+</div>
+@endsection

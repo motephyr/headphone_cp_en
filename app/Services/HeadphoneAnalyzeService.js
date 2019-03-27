@@ -18,8 +18,9 @@ class HeadphoneAnalyzeService {
       return target.replace(new RegExp(search, 'g'), replacement);
     };
     // remove \r\n
-    obj.post_description = obj.post_description.replaceAll('\r', '').replaceAll('\n', '')
-
+    if(obj.post_description){
+      obj.post_description = obj.post_description.replaceAll("\r\n", "\n").replaceAll("\r", "\n").replaceAll("\n", "<br />")
+    }
     // get name
     obj.name = obj.post_title.match(/[A-Za-z]+\d+([A-Za-z]*|)/g)
 
@@ -38,10 +39,9 @@ class HeadphoneAnalyzeService {
     let judge_price = obj.post_title.match(/(\d+出|出\d+|\d+售|售\d+|\d+收|收\d+)/g)
     if (judge_price) {
       obj.price = judge_price[0].match(/\d+/g)
-    } else {
+    } else if(obj.post_description){
       // let judge_price2 = obj.post_description.match(/[^a-zA-Z0-9_+.]\d+[^a-zA-Z0-9_+.][^a-zA-Z0-9_+.]/g)
       let judge_price2 = obj.post_description.match(/(价.\d+|价格.\d+|\d+包|\d+到|售\d+|\d+块|\d+元| \d+ |出\d+|\d+求)/g)
-
       if (judge_price2) {
         obj.price = judge_price2[0].match(/\d+/g)
       } else {
@@ -50,7 +50,9 @@ class HeadphoneAnalyzeService {
     }
 
 
-    return { id: obj.post_id, 
+    return { 
+      ori_id: obj.id,
+      id: obj.post_id, 
       link: obj.post_link, 
       situation: obj.situation, 
       title: obj.post_title, 

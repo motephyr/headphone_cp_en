@@ -41,7 +41,7 @@ class StatService{
     x.rollup = dl.format.table(x.stat).trim()
 
     x.linearRegression = dl.linearRegression(origin_data, function(x) { return x.price; }, function(x) { return x.time; })
-    x.buy_it = (x.linearRegression.slope > 0) ? 'true' : ""
+    x.buy_it = (x.linearRegression.slope > -0.05) ? 'true' : ""
     return x
   }
 

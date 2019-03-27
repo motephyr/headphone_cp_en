@@ -40,12 +40,12 @@ new Ignitor(require('@adonisjs/fold'))
     var schedule = require('node-schedule');
 
     schedule.scheduleJob('*/5 * * * *', async function () {
-      console.log('every 5 minute to get erji first page data');
+      console.log(new Date() + ' every 5 minute to get erji first page data');
       await CrawlerService.get_data_page(1, 1, [], true)
     });
 
     schedule.scheduleJob('3 * * * *', async function () {
-      console.log('every 1 hour to update target content');
+      console.log(new Date() + ' every 1 hour to update target content');
       await StatService.calculate()
     });
 

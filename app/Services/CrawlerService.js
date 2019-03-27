@@ -3,7 +3,7 @@ const RawContent = use('App/Models/RawContent')
 const TargetContent = use('App/Models/TargetContent')
 
 const MailService = require("./MailService")
-const HeadphoneAnalyzeService = require("./HeadphoneAnalyzeService")
+const AnalyzeService = require("./AnalyzeService")
 
 const c = new Crawler({
   maxConnections: 10,
@@ -55,7 +55,7 @@ class CrawlerService {
 
             if (need_mail) {
               console.log('send_mail')
-              obj = HeadphoneAnalyzeService.get_name_price(obj)
+              obj = AnalyzeService.get_name_price(obj)
               if (obj.name) {
                 let target = await TargetContent.findBy('name', obj.name)
                 if (target){

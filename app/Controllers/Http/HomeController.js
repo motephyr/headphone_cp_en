@@ -1,6 +1,6 @@
 'use strict'
 const RawContent = use('App/Models/RawContent')
-const HeadphoneAnalyzeService = require("../../Services/HeadphoneAnalyzeService")
+const AnalyzeService = require("../../Services/AnalyzeService")
 const Stock = use('App/Models/Stock')
 const Record = use('App/Models/Record')
 /**
@@ -20,7 +20,7 @@ class HomeController {
 
     }).orderBy('post_id','desc').fetch()
     raw_contents = raw_contents.toJSON()
-    raw_contents = HeadphoneAnalyzeService.get_result(raw_contents)
+    raw_contents = AnalyzeService.get_result(raw_contents)
     raw_contents = raw_contents.filter(function(x){return x.state !== 'buy'})
 
     let stocks = await Stock.query().orderBy('id', 'desc').fetch()

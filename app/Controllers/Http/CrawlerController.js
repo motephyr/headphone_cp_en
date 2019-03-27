@@ -1,6 +1,6 @@
 'use strict'
 const CrawlerService = require("../../Services/CrawlerService")
-const HeadphoneAnalyzeService = require("../../Services/HeadphoneAnalyzeService")
+const AnalyzeService = require("../../Services/AnalyzeService")
 const StatService = require("../../Services/StatService")
 
 const StatHelpers = require("../../Helpers/StatHelpers")
@@ -29,7 +29,7 @@ class CrawlerController {
 
     let raw_contents = await RawContent.query().fetch()
     raw_contents = raw_contents.toJSON()
-    let result = HeadphoneAnalyzeService.get_result(raw_contents)
+    let result = AnalyzeService.get_result(raw_contents)
 
     return view.render('crawler.analyze_data', { raw_contents: result })
     
@@ -46,7 +46,7 @@ class CrawlerController {
     let raw_contents = await RawContent.query().fetch()
     raw_contents = raw_contents.toJSON()
     
-    let result = HeadphoneAnalyzeService.get_result(raw_contents)
+    let result = AnalyzeService.get_result(raw_contents)
     let result2 = result.filter((x) => x.name === query.name).sort(function(a,b){
 
       return a.time - b.time;

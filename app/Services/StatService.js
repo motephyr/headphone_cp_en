@@ -1,6 +1,6 @@
 const dl = require('datalib')
 const RawContent = use('App/Models/RawContent')
-const HeadphoneAnalyzeService = require("./HeadphoneAnalyzeService")
+const AnalyzeService = require("./AnalyzeService")
 const StatHelpers = require("../Helpers/StatHelpers")
 const TargetContent = use('App/Models/TargetContent')
 
@@ -9,7 +9,7 @@ class StatService{
     let raw_contents = await RawContent.query().fetch()
     raw_contents = raw_contents.toJSON()
 
-    let result = HeadphoneAnalyzeService.get_result(raw_contents)
+    let result = AnalyzeService.get_result(raw_contents)
 
     let names = result.map((x) => x.name)
     let get_frequency = StatService.get_frequency(names)
@@ -41,7 +41,7 @@ class StatService{
     x.rollup = dl.format.table(x.stat).trim()
 
     x.linearRegression = dl.linearRegression(origin_data, function(x) { return x.price; }, function(x) { return x.time; })
-    x.buy_it = (x.linearRegression.slope > -0.05) ? 'true' : ""
+    x.buy_it = (x.linearRegression.slope > -0.02) ? 'true' : ""
     return x
   }
 

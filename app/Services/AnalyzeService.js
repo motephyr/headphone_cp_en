@@ -1,10 +1,10 @@
 
 
-class HeadphoneAnalyzeService {
+class AnalyzeService {
   static get_result(raw_contents) {
     let array = []
     for (let i = 0; i < raw_contents.length; i++) {
-      let obj = HeadphoneAnalyzeService.get_name_price(raw_contents[i])
+      let obj = AnalyzeService.get_name_price(raw_contents[i])
       if (obj.name && obj.price && obj.situation) {
         array.push(obj)
       }
@@ -70,4 +70,4 @@ class HeadphoneAnalyzeService {
 
 }
 
-module.exports = HeadphoneAnalyzeService
+module.exports = AnalyzeService

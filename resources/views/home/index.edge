@@ -39,7 +39,7 @@
           <div class="field">
             <label>實際價格</label>
     
-            <input type="text" name="price" />
+            <input type="number" name="price" />
           </div>
           <input type="hidden" name="situation" value="buy" />
     
@@ -122,7 +122,7 @@
                   {{ csrfField() }}
                   <input type="hidden" name="stock_id" value="{{stock.id}}" />
 
-                  <input type="hidden" name="situation" value="sell" />
+                  <input type="number" name="price" />
             
                   <button type="submit" class="button is-primary"> 售出 </button>
                 </form>

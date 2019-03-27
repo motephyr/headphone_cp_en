@@ -24,4 +24,5 @@ Route.get('/crawler/classify_and_choose_target_and_save', 'CrawlerController.cla
 Route.get('/crawler/product_trend', 'CrawlerController.product_trend')
 
 Route.post('/stock/buy', 'StockController.buy')
+Route.post('/stock/sell', 'StockController.sell')
 Route.post('/stock/recover_data', 'StockController.recover_data')

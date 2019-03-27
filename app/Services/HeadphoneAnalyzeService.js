@@ -36,12 +36,16 @@ class HeadphoneAnalyzeService {
     }
 
     // get price
-    let judge_price = obj.post_title.match(/(\d+出|出\d+|\d+售|售\d+|\d+收|收\d+)/g)
+    let removeStr = obj.post_title.replaceAll(/[a-zA-Z]+([0-9]+)/, "")
+
+    let judge_price = removeStr.match(/(\d+出|出\d+|\d+售|售\d+|\d+收|收\d+)/g)
     if (judge_price) {
       obj.price = judge_price[0].match(/\d+/g)
     } else if(obj.post_description){
+      removeStr = obj.post_description.replaceAll(/[a-zA-Z]+([0-9]+)/, "")
+
       // let judge_price2 = obj.post_description.match(/[^a-zA-Z0-9_+.]\d+[^a-zA-Z0-9_+.][^a-zA-Z0-9_+.]/g)
-      let judge_price2 = obj.post_description.match(/(价.\d+|价格.\d+|\d+包|\d+到|售\d+|\d+块|\d+元| \d+ |出\d+|\d+求)/g)
+      let judge_price2 = removeStr.match(/(价.\d+|价格.\d+|\d+包|\d+到|售\d+|\d+块|\d+元| \d+ |出\d+|\d+求)/g)
       if (judge_price2) {
         obj.price = judge_price2[0].match(/\d+/g)
       } else {

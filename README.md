@@ -1,31 +1,36 @@
-# Adonis fullstack application
 
-This is the fullstack boilerplate for AdonisJs, it comes pre-configured with.
+## Installation Notes:
 
-1. Bodyparser
-2. Session
-3. Authentication
-4. Web security middleware
-5. CORS
-6. Edge template engine
-7. Lucid ORM
-8. Migrations and seeds
+We need install node, yarn. 
 
-## Setup
+Node: https://nodejs.org/en/download/package-manager/#macos , Version:  > 8.x 
 
-Use the adonis command to install the blueprint
+Yarn: https://yarnpkg.com/en/docs/install#mac-stable , latest. 
 
-```bash
-adonis new yardstick
 ```
-
-or manually clone the repo and then run `npm install`.
-
-
-### Migrations
-
-Run the following command to run startup migrations.
-
-```js
-adonis migration:run
+yarn         #install packege
+yarn dev     #start server
 ```
+and you can link it. http://127.0.0.1:3333
+
+adonisjs is optional for database migration.
+
+The mail function needs to be modified by .env
+MAIL_ADDRESS and MAIL_PASSWD, and the Gmail privacy settings.
+
+-------------------------------------------------------------------------------------------------------
+Our target headset has the following features:
+
+- Enough number of occurrences: greater than 15 times (StatService.apperMore)
+
+- Remove Extreme Value                                                  (StatHelpers.filterOutliers)
+
+- The slope of the regression line should be stable          (StatService.getStatisticData)
+
+If the trend is normal, we can include the earphone to target.
+
+In index page, there are data within three days.
+
+- When the target earphone price is below a standard deviation, we think it can be bought.
+
+- When the target earphone price is higher than the average, we think it can be sold.

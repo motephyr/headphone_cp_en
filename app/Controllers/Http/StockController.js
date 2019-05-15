@@ -20,7 +20,7 @@ class StockController {
       raw_content.state = 'buy'
       await raw_content.save()
 
-        let obj = AnalyzeService.get_name_price(raw_content)
+        let obj = AnalyzeService.getNamePrice(raw_content)
 
         let stock = new Stock()
         stock.raw_content_id = raw_content.id

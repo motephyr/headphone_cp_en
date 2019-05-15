@@ -5,7 +5,7 @@ const Model = use('Model')
 class TargetContent extends Model {
 
 
-  static async renew_data(data){
+  static async renewData(data){
     await TargetContent.query().delete()
     
     for(let i=0; i<data.length; i++){

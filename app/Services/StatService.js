@@ -9,11 +9,11 @@ class StatService{
     let raw_contents = await RawContent.query().fetch()
     raw_contents = raw_contents.toJSON()
 
-    let result = AnalyzeService.get_result(raw_contents)
+    let result = AnalyzeService.getResult(raw_contents)
 
     let names = result.map((x) => x.name)
     let get_frequency = StatService.get_frequency(names)
-    let appear_more = StatService.appear_more(get_frequency)
+    let appear_more = StatService.appearMore(get_frequency)
 
     let merge_array = appear_more.map(function(x) {
       x.data = result.filter(function(element) {
@@ -25,15 +25,15 @@ class StatService{
     // get multi brand Statistics 
     result = merge_array.map(function(x){
       let filterOutliers = StatHelpers.filterOutliers(x.data)
-      return StatService.get_statistic_data(filterOutliers, x)
+      return StatService.getStatisticData(filterOutliers, x)
     })
 
    
-    await TargetContent.renew_data(result.filter(function(x){ return x.buy_it == 'true'}))
+    await TargetContent.renewData(result.filter(function(x){ return x.buy_it == 'true'}))
     return result
   }
 
-  static get_statistic_data(origin_data, x){
+  static getStatisticData(origin_data, x){
     x.stat = dl.groupby('name', 'situation')
     .summarize({'price': ['mean', 'stdev', 'count']})
     .execute(origin_data);
@@ -45,7 +45,7 @@ class StatService{
     return x
   }
 
-  static appear_more(list) {
+  static appearMore(list) {
     // choose headphone which more data.
     let result = Object.keys(list).filter(function (x) {
       return list[x] > 15

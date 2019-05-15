@@ -22,7 +22,7 @@ class HomeController {
 
     }).orderBy('post_id','desc').fetch()
     raw_contents = raw_contents.toJSON()
-    raw_contents = AnalyzeService.get_result(raw_contents)
+    raw_contents = AnalyzeService.getResult(raw_contents)
     raw_contents = raw_contents.filter(function(x){return x.state !== 'buy'})
 
     raw_contents = raw_contents.map(async function(x){

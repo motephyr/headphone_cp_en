@@ -54,32 +54,33 @@ class CrawlerService {
                 let raw_content = await RawContent.findBy('post_id', post_id)
                 if (!raw_content) {
                   raw_content = new RawContent()
+                  raw_content.post_id = post_id
+                  raw_content.post_title = common.eq(i).find('h3 > a').text()
+                  raw_content.post_description = common.eq(i).find('.pairsInline').text()
+                  raw_content.post_link = common.eq(i).find('h3 > a').attr('href')
+                  if (common.eq(i).find('abbr').attr('data-time')) {
+                    raw_content.post_at = parseInt(common.eq(i).find('abbr').attr('data-time')) * 1000
+                    let str = new Date(raw_content.post_at).toISOString()
+                    raw_content.time = str.substring(0, str.length - 8).replace('T', ' ')
+                  } else if (common.eq(i).find('a.dateTime')) {
+                    raw_content.post_at = new Date(common.eq(i).find('a.dateTime').text())
+                    if (raw_content.post_at) {
+                      let str = new Date(raw_content.post_at).toISOString()
+                      raw_content.time = str.substring(0, str.length - 8).replace('T', ' ')
+                    }
+                  }
+                  await raw_content.save()
+                  if (need_mail) {
+                    console.log('send_mail')
+                    raw_content = AnalyzeService.getNamePrice(raw_content)
+                    if (raw_content.name) {
+                      let target = await TargetContent.findBy('name', raw_content.name)
+                      if (target) {
+                        MailService.send({ subject: raw_content.title, text: JSON.stringify(raw_content) })
+                      }
+                    }
+                  }
                 }
-                raw_content.post_id = post_id
-                raw_content.post_title = common.eq(i).find('h3 > a').text()
-                raw_content.post_description = common.eq(i).find('.pairsInline').text()
-                raw_content.post_link = common.eq(i).find('h3 > a').attr('href')
-                if (common.eq(i).find('abbr').attr('data-time')) {
-                  raw_content.post_at = parseInt(common.eq(i).find('abbr').attr('data-time')) * 1000
-                  let str = new Date(raw_content.post_at).toISOString()
-                  raw_content.time = str.substring(0, str.length - 8).replace('T', ' ')
-                } else if (common.eq(i).find('a.dateTime')) {
-                  raw_content.post_at = new Date(common.eq(i).find('a.dateTime').text())
-                  let str = new Date(raw_content.post_at).toISOString()
-                  raw_content.time = str.substring(0, str.length - 8).replace('T', ' ')
-
-                }
-                await raw_content.save()
-                // if (need_mail) {
-                //   console.log('send_mail')
-                //   obj = AnalyzeService.get_name_price(obj)
-                //   if (obj.name) {
-                //     let target = await TargetContent.findBy('name', obj.name)
-                //     if (target) {
-                //       MailService.send({ subject: obj.title, text: JSON.stringify(obj) })
-                //     }
-                //   }
-                // }
 
               }
             }
@@ -95,7 +96,7 @@ class CrawlerService {
 
   static async get_data() {
     let totalpage = 1611
-    for (let i = 1; i <= totalpage; i++) {
+    for (let i = 1; i <= 800; i++) {
       CrawlerService.get_data_page(i, totalpage, [], false)
     }
 

@@ -1,10 +1,10 @@
 
 
 class AnalyzeService {
-  static get_result(raw_contents) {
+  static getResult(raw_contents) {
     let array = []
     for (let i = 0; i < raw_contents.length; i++) {
-      let obj = AnalyzeService.get_name_price(raw_contents[i])
+      let obj = AnalyzeService.getNamePrice(raw_contents[i])
       if (obj.name && obj.price && obj.situation) {
         array.push(obj)
       }
@@ -12,7 +12,7 @@ class AnalyzeService {
     return array
   }
 
-  static get_name_price(obj) {
+  static getNamePrice(obj) {
     String.prototype.replaceAll = function (search, replacement) {
       var target = this;
       return target.replace(new RegExp(search, 'g'), replacement);

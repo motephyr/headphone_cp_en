@@ -11,7 +11,7 @@ class CrawlerController {
   async get_data ({ request, response }) {
 
     // return await CrawlerService.get_data()
-    await CrawlerService.get_data_page(1, 1, [], true)
+    await CrawlerService.get_data_page(1, 1, [], false)
     response.redirect('/home')
 
 
@@ -29,7 +29,7 @@ class CrawlerController {
 
     let raw_contents = await RawContent.query().fetch()
     raw_contents = raw_contents.toJSON()
-    let result = AnalyzeService.get_result(raw_contents)
+    let result = AnalyzeService.getResult(raw_contents)
 
     return view.render('crawler.analyze_data', { raw_contents: result })
     
@@ -46,7 +46,7 @@ class CrawlerController {
     let raw_contents = await RawContent.query().fetch()
     raw_contents = raw_contents.toJSON()
     
-    let result = AnalyzeService.get_result(raw_contents)
+    let result = AnalyzeService.getResult(raw_contents)
     let result2 = result.filter((x) => x.name === query.name).sort(function(a,b){
 
       return a.time - b.time;
@@ -61,7 +61,7 @@ class CrawlerController {
 
     // get single brand Statistics 
     let filterOutliers = StatHelpers.filterOutliers(result2)
-    filterOutliers = StatService.get_statistic_data(filterOutliers, filterOutliers)
+    filterOutliers = StatService.getStatisticData(filterOutliers, filterOutliers)
 
     return view.render('crawler.product_trend', { html_result: filterOutliers, result: JSON.stringify(filterOutliers)})
   }

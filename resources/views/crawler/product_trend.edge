@@ -31,7 +31,7 @@
               {{ raw_content.situation }}
             </td>
             <td>
-              <a href="http://www.erji.net/{{ raw_content.link }}">{{ raw_content.title }}</a>
+              <a href="https://www.head-fi.org/{{ raw_content.link }}">{{ raw_content.title }}</a>
             </td>
             <td>
               {{ raw_content.price }}
@@ -53,10 +53,10 @@
 @section('js')
 <script>
   var result = JSON.parse("{{result}}".replace(/&quot;/g,'"'))
-  let buy_data = result.filter(function(x){return x.situation === 'buy'}).map(function(x){
+  let buy_data = result.filter(function(x){return x.situation === 'Wanted'}).map(function(x){
             return {x: x.time, y: x.price}
           })
-  let sell_data = result.filter(function(x){return x.situation === 'sell'}).map(function(x){
+  let sell_data = result.filter(function(x){return x.situation === 'For Sale'}).map(function(x){
             return {x: x.time, y: x.price}
           })
 		var config = {

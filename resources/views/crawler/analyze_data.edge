@@ -1,50 +1,49 @@
-
 @layout('master')
 
 @section('content')
-  <div class="box">
-    <h1 class="title">解析RAW DATA</h1>
-
-      <table class="table is-bordered is-striped is-narrow is-fullwidth">
-        <thead>
-          <tr>
-            <th>SN</th>
-            <th>situation</th>
-            <th>name</th>
-            <th>price</th>
-            <th>time</th>
-            <th>title</th>
-          </tr>
-        </thead>
-        <tbody>
-          @each(raw_content in raw_contents)
-            <tr>
-              <td>
-                {{ ($loop.index + 1) }}
-              </td>
-              <td>
-                {{ raw_content.situation }}
-              </td>
-              <td>                
-                {{ raw_content.name }}
-                <a href="http://www.erji.net/{{ raw_content.link }}">{{ raw_content.title }}</a>
-              </td>
-              <td>
-                {{ raw_content.price }}
-              </td>
-              <td>
-                {{ raw_content.ori_time }}
-              </td>
-              <td>
-                {{ raw_content.title }}
-              </td>
-            </tr>
-          @else
-            <tr>
-              <td colspan="3" class="has-text-centered">No task created yet!</td>
-            </tr>
-          @endeach
-        </tbody>
-      </table>
-  </div>
+<div class="box">
+  <h1 class="title">Analyze Raw Data</h1>
+  <p>We can check our result if is correct.</p>
+  <table class="table is-bordered is-striped is-narrow is-fullwidth">
+    <thead>
+      <tr>
+        <th>SN</th>
+        <th>situation</th>
+        <th>name</th>
+        <th>price</th>
+        <th>time</th>
+        <th>title</th>
+      </tr>
+    </thead>
+    <tbody>
+      @each(raw_content in raw_contents)
+      <tr>
+        <td>
+          {{ ($loop.index + 1) }}
+        </td>
+        <td>
+          {{ raw_content.situation }}
+        </td>
+        <td>
+          {{ raw_content.name }}
+          <a href="https://www.head-fi.org/{{ raw_content.link }}">{{ raw_content.title }}</a>
+        </td>
+        <td>
+          {{ raw_content.price }}
+        </td>
+        <td>
+          {{ raw_content.ori_time }}
+        </td>
+        <td>
+          {{ raw_content.title }}
+        </td>
+      </tr>
+      @else
+      <tr>
+        <td colspan="3" class="has-text-centered">No task created yet!</td>
+      </tr>
+      @endeach
+    </tbody>
+  </table>
+</div>
 @endsection

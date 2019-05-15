@@ -23,86 +23,70 @@ const c = new Crawler({
 
 let lock = false
 class CrawlerService {
-  /**
-   * From headphone_detail_page, get post_description
-   * @param obj include post_id, post_title, post_link, time
-   * @param need_mail if true, we will check new data if exists in TargetContent 
-   */
-  static async get_data_detail_page(obj, need_mail) {
 
+
+  static async get_data_page(nowpage, totalpage, result, need_mail) {
+    let url = ''
+    if (nowpage === 1) {
+      url = 'https://www.head-fi.org/forums/headphones-for-sale-trade.6550/'
+    } else {
+      url = `https://www.head-fi.org/forums/headphones-for-sale-trade.6550/page-${nowpage}`
+    }
     c.queue({
-      uri: `http://www.erji.net/${obj.post_link}`,
+      uri: url,
       callback: async function (error, res, done) {
         if (error) {
           console.log(error);
         } else {
-          var $ = res.$;
-          let common = $('div').add('t_fsz').find('td .t_f')
-
-          obj.post_description = $(common[0]).text()
-
-          const result = await RawContent.findBy('post_id', obj.post_id)
-          
-          if (!result) {
-            const raw_content = new RawContent()
-            raw_content.post_id = obj.post_id
-            raw_content.post_title = obj.post_title
-            raw_content.post_description = obj.post_description
-            raw_content.post_link = obj.post_link
-            raw_content.time = obj.time
-            raw_content.post_at = new Date(obj.time)
-            await raw_content.save()
-
-            if (need_mail) {
-              console.log('send_mail')
-              obj = AnalyzeService.get_name_price(obj)
-              if (obj.name) {
-                let target = await TargetContent.findBy('name', obj.name)
-                if (target){
-                  MailService.send({ subject: obj.title, text: JSON.stringify(obj) })
+          try {
+            var $ = res.$;
+            let common = $('ol.discussionListItems > li')
+            for (let i = 0; i < common.length; i++) {
+              if (common.eq(i).attr('id')) {
+                // let inner = common.eq(i).find('.pairsInline').text().replaceAll('\t', '').replaceAll('\n', '')
+                // if(inner && inner !== ''){
+                //   obj.type = inner.match(/Type: ([A-Za-z ]*)Currency/g)[0].replace('Type: ', '').replace('Currency', '')
+                //   obj.currency = inner.match(/Currency: ([A-Za-z ]*)Price/g)[0].replace('Currency: ', '').replace('Price', '')
+                //   obj.price = inner.match(/Price: ([0-9.]*)Ship/g)[0].replace('Price: ', '').replace('Ship', '')
+                //   obj.ship_to = inner.match(/Ship to: ([A-Za-z ]*)/g)[0].replace('Ship to: ', '').replace('Best offer', '')
+                // }
+                let post_id = common.eq(i).attr('id')
+                let raw_content = await RawContent.findBy('post_id', post_id)
+                if (!raw_content) {
+                  raw_content = new RawContent()
                 }
+                raw_content.post_id = post_id
+                raw_content.post_title = common.eq(i).find('h3 > a').text()
+                raw_content.post_description = common.eq(i).find('.pairsInline').text()
+                raw_content.post_link = common.eq(i).find('h3 > a').attr('href')
+                if (common.eq(i).find('abbr').attr('data-time')) {
+                  raw_content.post_at = parseInt(common.eq(i).find('abbr').attr('data-time')) * 1000
+                  let str = new Date(raw_content.post_at).toISOString()
+                  raw_content.time = str.substring(0, str.length - 8).replace('T', ' ')
+                } else if (common.eq(i).find('a.dateTime')) {
+                  raw_content.post_at = new Date(common.eq(i).find('a.dateTime').text())
+                  let str = new Date(raw_content.post_at).toISOString()
+                  raw_content.time = str.substring(0, str.length - 8).replace('T', ' ')
+
+                }
+                await raw_content.save()
+                // if (need_mail) {
+                //   console.log('send_mail')
+                //   obj = AnalyzeService.get_name_price(obj)
+                //   if (obj.name) {
+                //     let target = await TargetContent.findBy('name', obj.name)
+                //     if (target) {
+                //       MailService.send({ subject: obj.title, text: JSON.stringify(obj) })
+                //     }
+                //   }
+                // }
+
               }
             }
-          }
-        }
-        done();
-      }
-    })
-
-
-  }
-
-
-
-
-  static async get_data_page(nowpage, totalpage, result, need_mail) {
-    c.queue({
-      uri: `http://www.erji.net/forum.php?mod=forumdisplay&fid=8&filter=author&orderby=dateline&typeid=10&page=${nowpage}`,
-      callback: function (error, res, done) {
-        if (error) {
-          console.log(error);
-        } else {
-          var $ = res.$;
-          let common = $('tr').add(' .common')
-          for (let i = 0; i < common.length; i++) {
-            // console.log(common[i])
-            let obj = {}
-            obj.post_id = $(common[i]).find(' .showcontent').attr('id')
-            obj.post_title = $(common[i]).find(' .xst').text()
-            obj.post_link = $(common[i]).find(' .xst').attr('href')
-            obj.time = $($(common[i]).find(' .by')[0]).find('span').text()
-            if (obj.post_title && obj.post_link) {
-              CrawlerService.get_data_detail_page(obj, need_mail)
-            }
+          } catch (err) {
+            console.log(err)
           }
 
-          // console.log(`nowpage=${nowpage} result_length=${result.length} `)
-          // if (nowpage < totalpage) {
-
-          //   CrawlerService.get_data_page(nowpage + 1, totalpage, result)
-          // } else {
-          //   CrawlerService.get_data_detail_page(0, result)
-          // }
         }
         done();
       }
@@ -110,32 +94,10 @@ class CrawlerService {
   }
 
   static async get_data() {
-    // await RawContent.query().delete() // all delete test
-
-    // if (!lock) {
-    lock = true
-    // Queue URLs with custom callbacks & parameters
-    c.queue([{
-      uri: 'http://www.erji.net/forum.php?mod=forumdisplay&fid=8&filter=author&orderby=dateline&typeid=10',
-
-      // The global callback won't be called
-      callback: function (error, res, done) {
-        if (error) {
-          console.log(error);
-        } else {
-          var $ = res.$;
-          let totalpage = $('#autopbn').attr('totalpage')
-          for (let i = 1; i <= totalpage; i++) {
-            console.log(i)
-            CrawlerService.get_data_page(i, totalpage, [], false)
-          }
-          console.log('Grabbed', res.body.length, 'bytes');
-        }
-        done();
-      }
-    }]);
-
-    // }
+    let totalpage = 1611
+    for (let i = 1; i <= totalpage; i++) {
+      CrawlerService.get_data_page(i, totalpage, [], false)
+    }
 
     return 'finish'
   }

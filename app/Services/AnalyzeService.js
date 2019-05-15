@@ -17,52 +17,23 @@ class AnalyzeService {
       var target = this;
       return target.replace(new RegExp(search, 'g'), replacement);
     };
-    // remove \r\n
-    if(obj.post_description){
-      obj.post_description = obj.post_description.replaceAll("\r\n", "\n").replaceAll("\r", "\n").replaceAll("\n", "<br />")
-    }
-    // get name
+
     obj.name = obj.post_title.match(/[A-Za-z]+\d+([A-Za-z]*|)/g)
-
-    // get situation
-
-    let situation = obj.post_title.match(/(出|售|卖)/g)
-    if (situation) {
-      obj.situation = 'sell'
+    if(obj.post_description){
+      obj.post_description = obj.post_description.replaceAll('\t', '').replaceAll('\n', '')
+      obj.situation = obj.post_description.match(/Type: ([A-Za-z ]*)Currency/g) ? obj.post_description.match(/Type: ([A-Za-z ]*)Currency/g)[0].replace('Type: ', '').replace('Currency', '') : null
+      obj.price = obj.post_description.match(/Price: ([0-9.]*)Ship/g) ? obj.post_description.match(/Price: ([0-9.]*)Ship/g)[0].replace('Price: ', '').replace('Ship', '') : null
     }
-    situation = obj.post_title.match(/(收)/g)
-    if (situation) {
-      obj.situation = 'buy'
-    }
-
-    // get price
-    let removeStr = obj.post_title.replaceAll(/[a-zA-Z]+([0-9]+)/, "")
-
-    let judge_price = removeStr.match(/(\d+出|出\d+|\d+售|售\d+|\d+收|收\d+)/g)
-    if (judge_price) {
-      obj.price = judge_price[0].match(/\d+/g)
-    } else if(obj.post_description){
-      removeStr = obj.post_description.replaceAll(/[a-zA-Z]+([0-9]+)/, "")
-
-      // let judge_price2 = obj.post_description.match(/[^a-zA-Z0-9_+.]\d+[^a-zA-Z0-9_+.][^a-zA-Z0-9_+.]/g)
-      let judge_price2 = removeStr.match(/(价.\d+|价格.\d+|\d+包|\d+到|售\d+|\d+块|\d+元| \d+ |出\d+|\d+求)/g)
-      if (judge_price2) {
-        obj.price = judge_price2[0].match(/\d+/g)
-      } else {
-        obj.price = null
-      }
-    }
-
 
     return { 
       ori_id: obj.id,
       id: obj.post_id, 
       link: obj.post_link, 
       situation: obj.situation, 
-      title: obj.post_title, 
       name: obj.name && obj.name[0].toLowerCase(), 
-      price: obj.price && parseInt(obj.price[0]), 
-      time: new Date(obj.time).getTime() / (60 * 60 * 24 * 1000), 
+      title: obj.post_title.replaceAll('"', ' '), 
+      price: obj.price && parseInt(obj.price), 
+      time: new Date(obj.time).getTime(), 
       ori_time: obj.time,
     state: obj.state }
   }

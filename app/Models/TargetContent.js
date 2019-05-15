@@ -12,7 +12,7 @@ class TargetContent extends Model {
       let obj = new TargetContent()
       obj.name =  data[i].name
 
-      let sell = data[i].stat.find((x) => { return x.situation === 'sell'})
+      let sell = data[i].stat.find((x) => { return x.situation === 'For Sale'})
       obj.mean_price = sell.mean_price
       obj.stdev_price = sell.stdev_price
       obj.save()

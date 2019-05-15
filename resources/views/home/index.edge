@@ -2,50 +2,24 @@
 
 @section('content')
 <div class="columns">
-  <div class="column is-1">
-    <aside class="menu">
-      <p class="menu-label">
-        <form method="POST" action="{{ route('CrawlerController.get_data') }}">
-          {{ csrfField() }}
 
-          <button type="submit"> 手動抓取耳機資料 </button>
-        </form>
-      </p>
-      <p class="menu-label">
-        <a class="has-text-dark" href="/crawler/analyze_data">解析Raw Data</a>
-      </p>
-      <p class="menu-label">
-        <a class="has-text-dark" href="/crawler/classify_and_choose_target_and_save">目前適合購買的耳機</a>
-      </p>
-      <br />
-      <p class="menu-label">
-          <form method="POST" action="{{ route('StockController.recover_data') }}">
-              {{ csrfField() }}
-    
-              <button type="submit" class="has-text-danger"> 還原購買資料 </button>
-            </form>
-        </p>
-    </aside>
-  </div>
-  <div class="column is-6">
-    <h2>購買耳機</h2>
-      <form method="POST" action="{{ route('StockController.buy') }}">
-          {{ csrfField() }}
-          <div class="field">
-            <label>Post Id</label>
-    
-            <input type="text" name="post_id" />
-          </div>
-          <div class="field">
-            <label>實際價格</label>
-    
-            <input type="number" name="price" />
-          </div>
-          <input type="hidden" name="situation" value="buy" />
-    
-          <button type="submit" class="button is-primary"> 購買 </button>
-        </form>
-        <br />
+  <div class="column is-7">
+    <p class="menu-label">
+      <form method="POST" action="{{ route('CrawlerController.get_data') }}">
+        {{ csrfField() }}
+  
+        <button type="submit"> Get new data Immediately</button>
+        (Every 5 minute to get erji first page data automatically.)
+      </form>
+    </p>
+    <p class="menu-label">
+      <a class="has-text-dark" href="/crawler/analyze_data"><button>Check current raw data</button></a>
+    </p>
+    <p class="menu-label">
+      <a class="has-text-dark" href="/crawler/classify_and_choose_target_and_save"><button>Check recommend earphone
+          list</button></a>
+    </p>
+    <h1>Data within three days.</h1>
     <table class="table is-bordered is-striped is-narrow is-fullwidth">
       <thead>
         <tr>
@@ -67,9 +41,9 @@
             {{ raw_content.situation }}
           </td>
           <td>
-            分析：<a href="/crawler/product_trend?name={{ raw_content.name }}">{{ raw_content.name }}</a>
+            Analyze：<a href="/crawler/product_trend?name={{ raw_content.name }}">{{ raw_content.name }}</a>
             <br />
-            論壇連結：<a href="http://www.erji.net/{{ raw_content.link }}">{{ raw_content.title }}</a>
+            Link：<a href="https://www.head-fi.org/{{ raw_content.link }}">{{ raw_content.title }}</a>
 
           </td>
           <td>
@@ -79,20 +53,48 @@
             {{ raw_content.ori_time }}
           </td>
           <td>
-              {{ raw_content.buy_it }}
-            </td>
-  
+            {{ raw_content.buy_it }}
+          </td>
+
         </tr>
         @else
         <tr>
-          <td colspan="3" class="has-text-centered">三天之內沒有可解析的資料</td>
+          <td colspan="3" class="has-text-centered">No parsable data within three days.</td>
         </tr>
         @endeach
       </tbody>
     </table>
   </div>
   <div class="column is-5">
-    <h2>存貨資料</h2>
+    <h2>[Emulator buy earphone]</h2>
+    <div class="columns">
+      <div class="column is-9">
+        <form method="POST" action="{{ route('StockController.buy') }}">
+          {{ csrfField() }}
+          <div class="field">
+            <label>Post Id</label>
+
+            <input type="text" name="post_id" />
+          </div>
+          <div class="field">
+            <label>Real Price:</label>
+
+            <input type="number" name="price" />
+          </div>
+          <input type="hidden" name="situation" value="buy" />
+
+          <button type="submit" class="button is-primary"> Buy </button>
+        </form>
+      </div>
+      <div class="column is-3">
+          <form method="POST" action="{{ route('StockController.recover_data') }}">
+            {{ csrfField() }}
+
+            <button type="submit" class="button is-danger"> Reset Buying Data </button>
+          </form>
+      </div>
+    </div>
+    <h2>Stock</h2>
     <table class="table is-bordered is-striped is-narrow is-fullwidth">
       <thead>
         <tr>
@@ -100,7 +102,7 @@
           <th>name</th>
           <th>price</th>
           <th>bought_at</th>
-          <th></th>
+          <th>ACT</th>
         </tr>
       </thead>
       <tbody>
@@ -110,7 +112,7 @@
             {{ stock.raw_content_id }}
           </td>
           <td>
-              <a href="/crawler/product_trend?name={{ stock.name }}">{{ stock.name }}</a>
+            <a href="/crawler/product_trend?name={{ stock.name }}">{{ stock.name }}</a>
           <td>
             {{ stock.price }}
           </td>
@@ -118,25 +120,25 @@
             {{ stock.bought_at }}
           </td>
           <td>
-              <form method="POST" action="{{ route('StockController.sell') }}">
-                  {{ csrfField() }}
-                  <input type="hidden" name="stock_id" value="{{stock.id}}" />
+            <form method="POST" action="{{ route('StockController.sell') }}">
+              {{ csrfField() }}
+              <input type="hidden" name="stock_id" value="{{stock.id}}" />
 
-                  實際賣出價格<input type="number" name="price" />
-            
-                  <button type="submit" class="button is-primary"> 售出 </button>
-                </form>
+              Real Sell Price<input type="number" name="price" />
+
+              <button type="submit" class="button is-primary"> Sell </button>
+            </form>
           </td>
         </tr>
         @else
         <tr>
-          <td colspan="3" class="has-text-centered">未有存貨</td>
+          <td colspan="5" class="has-text-centered">No Stock</td>
         </tr>
         @endeach
       </tbody>
     </table>
 
-    <h2>歷史紀錄</h2>
+    <h2>History Record</h2>
     <table class="table is-bordered is-striped is-narrow is-fullwidth">
       <thead>
         <tr>
@@ -170,7 +172,7 @@
         </tr>
         @else
         <tr>
-          <td colspan="3" class="has-text-centered">未有歷史紀錄</td>
+          <td colspan="6" class="has-text-centered">No history record</td>
         </tr>
         @endeach
       </tbody>
